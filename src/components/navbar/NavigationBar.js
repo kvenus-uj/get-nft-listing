@@ -34,7 +34,7 @@ const Navigationbar = (props) => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto"></Nav>
           <Nav>
-            {/* <DropdownButton
+            <DropdownButton
               variant={props.variant.toLowerCase()}
               id="dropdown-basic-button"
               title={props.title}
@@ -43,7 +43,7 @@ const Navigationbar = (props) => {
               <Dropdown.Item eventKey="mainnet">Mainnet</Dropdown.Item>
               <Dropdown.Item eventKey="devnet">Devnet</Dropdown.Item>
               <Dropdown.Item eventKey="testnet">Testnet</Dropdown.Item>
-            </DropdownButton> */}
+            </DropdownButton>
           </Nav>
           <Nav>
             <Nav.Link></Nav.Link>

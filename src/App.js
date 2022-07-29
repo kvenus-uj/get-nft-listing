@@ -27,7 +27,7 @@ function App({connection,variant, cluster}) {
 
   const [nfts, setNfts] = useState([]);
   const [groupedNfts, setGroupedNfts] = useState([]);
-  const [view, setView] = useState('collection');
+  const [view, setView] = useState('nft-grid');
   //alert props
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -35,6 +35,39 @@ function App({connection,variant, cluster}) {
 
   //loading props
   const [loading, setLoading] = useState(false);
+
+  const isListedMagicEden = async (addr) => {
+    let req = "https://api-mainnet.magiceden.io/rpc/getNFTByMintAddress/";
+    req += addr;
+    try {
+      let res = await fetch(req);
+      let res_json = await res.json();
+      if(res_json.results.mintAddress === addr) {
+        return "Listed";
+      }else {
+        return 'None';
+      }
+    } catch (err) {
+      return 'None';
+    }
+  }
+
+  const isListedOpenSea = async (addr) => {
+    let req = "https://opensea.io/assets/solana/";
+    req += addr;
+    try {
+      let res = await fetch(req);
+      let res_json = await res.json();
+      console.log(res_json);
+      if(res_json.results.mintAddress === addr) {
+        return "Listed";
+      }else {
+        return 'None';
+      }
+    } catch (err) {
+      return 'None';
+    }
+  }
 
 
   const getNfts = async (e) => {
@@ -77,9 +110,14 @@ function App({connection,variant, cluster}) {
 
     const metadatas = await fetchMetadata(nftArray);
     var group = {};
-
+    var _nfts = [];
     for (const nft of metadatas) {
       console.log(nft);
+      var _tmp = [];
+      _tmp = nft;
+      _tmp.isMagicEden = await isListedMagicEden(nft.mint);
+      // _tmp.isOpenSea = await isListedOpenSea(tmp.mint);
+      _nfts.push(_tmp);
       if (group.hasOwnProperty(nft.data.symbol)) {
         group[nft.data.symbol].push(nft);
       } else {
@@ -88,7 +126,7 @@ function App({connection,variant, cluster}) {
     }
     setGroupedNfts(group);
     setLoading(false);
-    return setNfts(metadatas);
+    return setNfts(_nfts);
   };
 
   const fetchMetadata = async (nftArray) => {
@@ -122,12 +160,12 @@ function App({connection,variant, cluster}) {
           </Col>
           <Col xs="12" md="12" lg="3" className="d-grid">
             <Button variant={variant} type="submit" onClick={getNfts}>
-              Get NFTs from {cluster}
+              Get NFT listing Info
             </Button>
           </Col>
           <Col lg="1"></Col>
           <Col xs="12" md="12" lg="1">
-            {view === "nft-grid" && (
+            {/* {view === "nft-grid" && (
               <Button
                 size="md"
                 variant="danger"
@@ -137,7 +175,7 @@ function App({connection,variant, cluster}) {
               >
                 Close
               </Button>
-            )}
+            )} */}
           </Col>
         </Row>
 
@@ -145,14 +183,16 @@ function App({connection,variant, cluster}) {
           <div className="loading">
             <PreLoader variant={variant} />
           </div>
-        ) : view === "collection" ? (
-          <Collections
-            groupedNfts={groupedNfts}
-            setNfts={setNfts}
-            variant={variant}
-            setView={setView}
-          />
-        ) : (
+        ) : 
+        // view === "collection" ? (
+        //   <Collections
+        //     groupedNfts={groupedNfts}
+        //     setNfts={setNfts}
+        //     variant={variant}
+        //     setView={setView}
+        //   />
+        // ) : 
+        (
           <GalleryView nfts={nfts} />
         )}
         {show && (

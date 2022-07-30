@@ -7,7 +7,18 @@ import AlertDismissible from './components/alert/alertDismissible';
 import PreLoader from './components/preloader';
 import Collections from './components/collections';
 import GalleryView from './components/galleryview';
+import * as theblockchainapi from 'theblockchainapi';
 
+let defaultClient = theblockchainapi.ApiClient.instance;
+let APIKeyID = defaultClient.authentications['APIKeyID'];
+let APISecretKey = defaultClient.authentications['APISecretKey'];
+
+// BEGIN: -----------------------------------------------------------------------------------------------
+// TODO:- Fill in with your own API Keys
+// Get a free API Key Pair: https://dashboard.blockchainapi.com/api-keys
+APIKeyID.apiKey = 'ltX6Qosn4JOxiEz';
+APISecretKey.apiKey = 'HHburh2VWUplXpV';
+let marketplaceApi = new theblockchainapi.SolanaNFTMarketplacesApi();
 function App({connection,variant, cluster}) {
   const { publicKey } = useWallet();
 
@@ -40,7 +51,19 @@ function App({connection,variant, cluster}) {
     let req = "https://api-mainnet.magiceden.io/rpc/getNFTByMintAddress/";
     req += addr;
     try {
-      let res = await fetch(req);
+      // let listingDetails = await marketplaceApi.solanaGetNFTListing("mainnet-beta", addr).then((data) => {
+      //   return data;
+      // }, (error) => {
+      //   console.error(error);
+      //   return null;
+      // });
+      
+      // console.log(listingDetails);
+      let res = await fetch(req, {
+        method: "GET",
+        mode: 'cors',
+        headers: {},
+      });
       let res_json = await res.json();
       if(res_json.results.mintAddress === addr) {
         return "Listed";

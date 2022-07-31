@@ -48,24 +48,13 @@ function App({connection,variant, cluster}) {
   const [loading, setLoading] = useState(false);
 
   const isListedMagicEden = async (addr) => {
-    let req = "https://api-mainnet.magiceden.io/rpc/getNFTByMintAddress/";
-    req += addr;
+    let req = "https://api-mainnet.magiceden.dev/v2/tokens/";
+    req += addr + "/listings";
     try {
-      // let listingDetails = await marketplaceApi.solanaGetNFTListing("mainnet-beta", addr).then((data) => {
-      //   return data;
-      // }, (error) => {
-      //   console.error(error);
-      //   return null;
-      // });
-      
-      // console.log(listingDetails);
-      let res = await fetch(req, {
-        method: "GET",
-        mode: 'cors',
-        headers: {},
-      });
+      console.log(req);
+      let res = await fetch(req);
       let res_json = await res.json();
-      if(res_json.results.mintAddress === addr) {
+      if(res_json.length > 0 && res_json[0].tokenMint === addr) {
         return "Listed";
       }else {
         return 'None';

@@ -2,7 +2,7 @@ import './App.css';
 import { useEffect, useRef, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getParsedNftAccountsByOwner, isValidSolanaAddress, createConnectionConfig, } from "@nfteyez/sol-rayz";
-import { Col, Row, Button, Form} from "react-bootstrap";
+import { Col, Row, Button, Form, Card} from "react-bootstrap";
 import AlertDismissible from './components/alert/alertDismissible';
 import PreLoader from './components/preloader';
 import Collections from './components/collections';
@@ -47,23 +47,48 @@ function App({connection,variant, cluster}) {
   //loading props
   const [loading, setLoading] = useState(false);
 
-  const isListedMagicEden = async (addr) => {
+  const [tokenMint, setTokenMint] = useState('');
+  const [owner, setOwner] = useState('');
+  const [isList, setIsList] = useState(false);
+  const [nftImg, setImg] = useState('');
+  const [name, setName] = useState('');
+
+  const isListedMagicEden = async () => {
+    let addr = inputRef.current.value;
     let req = "https://api-mainnet.magiceden.dev/v2/tokens/";
     req += addr + "/listings";
     try {
-      console.log(req);
       let res = await fetch(req);
       let res_json = await res.json();
-      if(res_json.length > 0 && res_json[0].tokenMint === addr) {
-        return "Listed";
+      if(res_json.length > 0) {
+        setTokenMint(res_json[0].tokenMint);
+        setOwner(res_json[0].seller);
+        setIsList(true);
+        getNftfromMint(addr);
       }else {
-        return 'None';
+        setIsList(false);
       }
     } catch (err) {
-      return 'None';
+      setIsList(false);
     }
   }
 
+  const getNftfromMint = async (addr) => {
+    let req = "https://api-mainnet.magiceden.dev/v2/tokens/" + addr;
+    try{
+      let res = await fetch(req);
+      let res_json = await res.json();
+      console.log(res_json);
+      if(res_json.image) {
+        setImg(res_json.image);
+        setName(res_json.name);
+      }else{
+        setImg('');
+      }
+    } catch (err) {
+      setImg('');
+    }
+  }
   const isListedOpenSea = async (addr) => {
     let req = "https://opensea.io/assets/solana/";
     req += addr;
@@ -167,12 +192,12 @@ function App({connection,variant, cluster}) {
             <Form.Control
               type="text"
               ref={inputRef}
-              placeholder="Wallet address"
+              placeholder="NFT token mint address"
             />
           </Col>
           <Col xs="12" md="12" lg="3" className="d-grid">
-            <Button variant={variant} type="submit" onClick={getNfts}>
-              Get NFT listing Info
+            <Button variant={variant} type="submit" onClick={isListedMagicEden}>
+              Check NFT Listking
             </Button>
           </Col>
           <Col lg="1"></Col>
@@ -190,26 +215,64 @@ function App({connection,variant, cluster}) {
             )} */}
           </Col>
         </Row>
-
-        {loading ? (
+        {isList ? (
+          <Row>
+            <Col></Col>
+            <Col lg='3' md='4'>
+            <Card
+              className="imageGrid"
+              lg="3"
+              style={{
+                width: "100%",
+                backgroundColor: "#2B3964",
+                padding: "10px",
+                borderRadius: "10px",
+              }}
+            >
+              <Card.Img
+                variant="top"
+                src={nftImg}
+                alt={name}
+              />
+              <Card.Body>
+                <Card.Title style={{ color: "#fff" }}>
+                  <p>{name}</p>
+                </Card.Title>
+              </Card.Body>
+            </Card>
+            </Col>
+            <Col>
+              <p>Token Mint: {tokenMint}</p>
+              <p>Owner: {owner}</p>
+              <p>Magic Eden Listed</p>
+            </Col>
+          </Row>
+        ) : (
+          <Row>
+            <Col style={{display: 'flex', justifyContent: 'center'}}>
+              <p>Not Listed in Magic Eden...</p>
+            </Col>
+          </Row>
+        )}    
+        {/* {loading ? (
           <div className="loading">
             <PreLoader variant={variant} />
           </div>
         ) : 
-        // view === "collection" ? (
-        //   <Collections
-        //     groupedNfts={groupedNfts}
-        //     setNfts={setNfts}
-        //     variant={variant}
-        //     setView={setView}
-        //   />
-        // ) : 
+        view === "collection" ? (
+          <Collections
+            groupedNfts={groupedNfts}
+            setNfts={setNfts}
+            variant={variant}
+            setView={setView}
+          />
+        ) : 
         (
           <GalleryView nfts={nfts} />
         )}
         {show && (
           <AlertDismissible title={title} message={message} setShow={setShow} />
-        )}
+        )} */}
       </div>
     </div>
   );

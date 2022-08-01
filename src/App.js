@@ -47,7 +47,13 @@ function App({connection,variant, cluster}) {
     let req = "https://api-mainnet.magiceden.dev/v2/tokens/";
     req += addr + "/listings";
     try {
-      let res = await fetch(req);
+      let res = await fetch(req, {
+        //mode: 'no-cors',
+        header: {
+          'Access-Control-Allow-Headers': '*',
+          ...Headers,
+        },
+      });
       let res_json = await res.json();
       if(res_json.length > 0) {
         setTokenMint(res_json[0].tokenMint);

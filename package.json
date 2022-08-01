@@ -19,6 +19,7 @@
     "react-scripts": "^5.0.0",
     "react-spinners": "^0.13.3",
     "stream": "^0.0.2",
+    "theblockchainapi": "^1.0.9405",
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.17"
   },

@@ -48,12 +48,12 @@ function App({connection,variant, cluster}) {
     req += addr + "/listings";
     try {
       let res = await fetch(req, {
-        //mode: 'no-cors',
-        header: {
-          'Access-Control-Allow-Headers': '*',
-          ...Headers,
-        },
-      });
+        // mode: 'no-cors',
+        // header: {
+        //   'Access-Control-Allow-Headers': '*',
+        //   ...Headers,
+        // },
+      });console.log(res);
       let res_json = await res.json();
       if(res_json.length > 0) {
         setTokenMint(res_json[0].tokenMint);
